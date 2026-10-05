@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import messagebox as mb
 import time
-
-import pygame
 import pygame as pg
 
 pg.mixer.init()

@@ -5,7 +5,6 @@ import requests
 import json
 import pprint
 
-
 def update_base_label1(event):
     code = base_combobox1.get()
     name = currencies[code]
@@ -39,7 +38,7 @@ def exchange():
                 base1 = currencies[base1_code]
                 base2 = currencies[base2_code]
                 target = currencies[target_code]
-                mb.showinfo('Курс обмена', f'Курс : {exchange_rate1:.1f} {target} за 1 {base1},\n {exchange_rate2:.1f} {target} за 1 {base2}')
+                mb.showinfo('Курс обмена', f'Курс : {exchange_rate1:.2f} {target} за 1 {base1},\n {exchange_rate2:.2f} {target} за 1 {base2}')
             else:
                 mb.showerror('Ошибка', f'Валюта не найдена')
         except Exception as er:
@@ -64,31 +63,32 @@ currencies = {
 
 
 root = Tk()
+root.configure(bg='lightblue')
 root.title('Курс обмена валют')
 root.geometry('360x350')
 
-Label(root, text='Базовая валюта').pack(pady=10, padx=10)
+Label(root, text='Базовая валюта', bg='purple1').pack(pady=10, padx=10)
 base_combobox1 = ttk.Combobox(root, values=list(currencies.keys()))
 base_combobox1.pack(pady=10, padx=10)
 base_combobox1.bind('<<ComboboxSelected>>', update_base_label1)
 base_currency_label1 = ttk.Label(root)
 base_currency_label1.pack()
 
-Label(root, text='Вторая базовая валюта').pack(pady=10, padx=10)
+Label(root, text='Вторая базовая валюта', bg='purple1').pack(pady=10, padx=10)
 base_combobox2 = ttk.Combobox(root, values=list(currencies.keys()))
 base_combobox2.pack(pady=10, padx=10)
 base_combobox2.bind('<<ComboboxSelected>>', update_base_label2)
 base_currency_label2 = ttk.Label(root)
 base_currency_label2.pack()
 
-Label(root, text='Целевая валюта').pack(pady=10, padx=10)
+Label(root, text='Целевая валюта', bg='purple1').pack(pady=10, padx=10)
 target_combobox = ttk.Combobox(root, values=list(currencies.keys()))
 target_combobox.pack(pady=10, padx=10)
 target_combobox.bind('<<ComboboxSelected>>', update_currency_label)
 target_currency_label = ttk.Label(root)
 target_currency_label.pack()
 
-Button(text='Получить курс обмена',
+Button(text='Получить курс обмена', bg='blue', font="bold",
        command=exchange).pack(pady=10, padx=10)
 
 

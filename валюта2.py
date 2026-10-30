@@ -6,42 +6,40 @@ import json
 import pprint
 
 
-def update_currency_label1(event):
-    code1 = combobox1.get()
-    name1 = currencies[code1]
-    currency_label1.config(text=name1)
+def update_base_label1(event):
+    code = base_combobox1.get()
+    name = currencies[code]
+    base_currency_label1.config(text=name)
 
-def update_currency_label2(event):
-    code2 = combobox2.get()
-    name2 = currencies[code2]
-    currency_label2.config(text=name2)
+def update_base_label2(event):
+    code = base_combobox2.get()
+    name = currencies[code]
+    base_currency_label2.config(text=name)
 
-def update_currency_label3(event):
-    code3 = combobox3.get()
-    name3 = currencies[code3]
-    currency_label3.config(text=name3)
+def update_currency_label(event):
+    code = target_combobox.get()
+    name = currencies[code]
+    target_currency_label.config(text=name)
 
 def exchange():
-    code1 = combobox1.get()
-    code2 = combobox2.get()
-    code3 = combobox3.get()
-    if code3:
+    target_code = target_combobox.get().strip()
+    base1_code = base_combobox1.get().strip()
+    base2_code = base_combobox2.get().strip()
+    if target_code and base1_code and base2_code:
         try:
-            response1 = requests.get('https://open.er-api.com/v6/latest/USD')
+            response1 = requests.get(f'https://open.er-api.com/v6/latest/{base1_code}')
             response1.raise_for_status()
-            response2 = requests.get('https://open.er-api.com/v6/latest/USD')
+            response2 = requests.get(f'https://open.er-api.com/v6/latest/{base2_code}')
             response2.raise_for_status()
-            response3 = requests.get('https://open.er-api.com/v6/latest/USD')
-            response3.raise_for_status()
             data1 = response1.json()
             data2 = response2.json()
-            data3 = response3.json()
-            if code1 in data1['rates'] and code2 in data2['rates'] and code3 in data3['rates']:
-                exchange_rate1 = data1['rates'][code1]/data3['rates'][code3]
-                exchange_rate2 = data2['rates'][code2]/data3['rates'][code3]
-                currency_name1 = currencies[code1]
-                currency_name2 = currencies[code2]
-                mb.showinfo('Курс обмена', f'Курс валют: {exchange_rate1:.4f} {code1} за 1 {code3},\n {exchange_rate2:.4f} {code2} за 1 {code3}')
+            if target_code in data1['rates'] and data2['rates']:
+                exchange_rate1 = data1['rates'][target_code]
+                exchange_rate2 = data2['rates'][target_code]
+                base1 = currencies[base1_code]
+                base2 = currencies[base2_code]
+                target = currencies[target_code]
+                mb.showinfo('Курс обмена', f'Курс : {exchange_rate1:.1f} {target} за 1 {base1},\n {exchange_rate2:.1f} {target} за 1 {base2}')
             else:
                 mb.showerror('Ошибка', f'Валюта не найдена')
         except Exception as er:
@@ -69,35 +67,26 @@ root = Tk()
 root.title('Курс обмена валют')
 root.geometry('360x350')
 
-l1 = Label(root, text='Базовая валюта').pack(pady=10, padx=10)
-popular_currencies = ['USD', 'EUR', 'RUB', 'JPY', 'GBP', 'AUD',
-                      'CAD', 'CHF', 'CNY', 'KZT', 'UZS']
-combobox1 = ttk.Combobox(root, values=popular_currencies, state='readonly')
-combobox1.pack(pady=10, padx=10)
-combobox1.bind('<<ComboboxSelected>>', update_currency_label1)
+Label(root, text='Базовая валюта').pack(pady=10, padx=10)
+base_combobox1 = ttk.Combobox(root, values=list(currencies.keys()))
+base_combobox1.pack(pady=10, padx=10)
+base_combobox1.bind('<<ComboboxSelected>>', update_base_label1)
+base_currency_label1 = ttk.Label(root)
+base_currency_label1.pack()
 
-currency_label1 = ttk.Label(root)
-currency_label1.pack()
+Label(root, text='Вторая базовая валюта').pack(pady=10, padx=10)
+base_combobox2 = ttk.Combobox(root, values=list(currencies.keys()))
+base_combobox2.pack(pady=10, padx=10)
+base_combobox2.bind('<<ComboboxSelected>>', update_base_label2)
+base_currency_label2 = ttk.Label(root)
+base_currency_label2.pack()
 
-l2 = Label(root, text='Вторая базовая валюта').pack(pady=10, padx=10)
-popular_currencies = ['USD', 'EUR', 'RUB', 'JPY', 'GBP', 'AUD',
-                      'CAD', 'CHF', 'CNY', 'KZT', 'UZS']
-combobox2 = ttk.Combobox(root, values=popular_currencies, state='readonly')
-combobox2.pack(pady=10, padx=10)
-combobox2.bind('<<ComboboxSelected>>', update_currency_label2)
-
-currency_label2 = ttk.Label(root)
-currency_label2.pack()
-
-l3 = Label(root, text='Целевая валюта').pack(pady=10, padx=10)
-popular_currencies = ['USD', 'EUR', 'RUB', 'JPY', 'GBP', 'AUD',
-                      'CAD', 'CHF', 'CNY', 'KZT', 'UZS']
-combobox3 = ttk.Combobox(root, values=popular_currencies, state='readonly')
-combobox3.pack(pady=10, padx=10)
-combobox3.bind('<<ComboboxSelected>>', update_currency_label3)
-
-currency_label3 = ttk.Label(root)
-currency_label3.pack()
+Label(root, text='Целевая валюта').pack(pady=10, padx=10)
+target_combobox = ttk.Combobox(root, values=list(currencies.keys()))
+target_combobox.pack(pady=10, padx=10)
+target_combobox.bind('<<ComboboxSelected>>', update_currency_label)
+target_currency_label = ttk.Label(root)
+target_currency_label.pack()
 
 Button(text='Получить курс обмена',
        command=exchange).pack(pady=10, padx=10)
